@@ -1,7 +1,6 @@
 
 # coding: utf-8
 
-import collections
 import re
 import nltk
 from nltk.corpus import stopwords
@@ -9,10 +8,12 @@ from nltk.stem import *
 from collections import Counter
 
 ##1a
+##  encapsulates string split function
 def words_in(s):
     return s.split()
 
 ##1b
+##  returns concatenated string of the 2nd chars of each word in a list
 def second_letter(words):
     letters = ""
     for w in words:
@@ -20,21 +21,26 @@ def second_letter(words):
     return letters
 
 ##1c
-def phrases(s):
+##  returns list of all words in a list before a given word
+def phrases(s,word):
     words = words_in(s)
-    return words[0:words.index("sleep")]
+    return words[0:words.index(word)]
 
 ##1d
+##  returns string representation of list with words seperated by spaces
 def combine(words):
     return " ".join(words)
 
 ##1e
+##  prints the words in alphabetical order without changing original list order
 def print_alpha(words):
-    words.sort()
-    for w in words:
+    sorted_words = words
+    sorted_words.sort()
+    for w in sorted_words:
         print(w)
         
 ##2
+##  returns dict with words as keys and word counts as values
 def word_counts(s):
     words = words_in(s)
     freqs = dict()
@@ -46,6 +52,7 @@ def word_counts(s):
     return freqs
 
 ##5
+##  remove all duplicate lines from a file
 def remove_dups_file(filename):
     newcontent = []
     try: infile = open(filename)
@@ -64,9 +71,21 @@ def remove_dups_file(filename):
         outfile.write(line+"\n")
     outfile.close()
 
+##  returns string without start/end whitespace, uppercase chars, non-speech words
 def clean_string(old):
-    return old.strip().replace(currentSpeaker+": ","").lower().replace("."," ").    replace("?"," ").replace("!"," ").replace(","," ").replace("/"," ").    replace("(inaudable)","").replace(";","").replace("'","").replace("-","").replace("$","")
+    clean_str = ""
+    #remove whitespace at start/end
+    #make lowercase
+    #remove speaker labels and commentary
+    old = old.strip().lower().replace(currentSpeaker+": ","").replace("(inaudable)","")
+    for c in old:
+        #remove punctuation
+        if c not in ":.?!,/;'-$":
+            clean_str += c
+        
+    return clean_str
 
+##  return list of words without stop words
 def remove_stopwords(words):
     result = list()
     for w in words:
@@ -74,15 +93,16 @@ def remove_stopwords(words):
             result.append(w)
     return result
 
+##  return list of words stemmed using given stemmer
 def stem_words(words, use):
     result = []
     stemmer = None
     if use == "porter":
-        stemmer = PorterStemmer()
+        stemmer = nltk.PorterStemmer()
     elif use == "snowball":
-        stemmer = SnowballStemmer('english')
+        stemmer = nltk.SnowballStemmer('english')
     else:
-        stemmer = LancasterStemmer()
+        stemmer = nltk.LancasterStemmer()
     
     for w in words:
         result.append(stemmer.stem(w))
@@ -198,7 +218,7 @@ print("")
 
 ##7d
 def get_pos_words(filename):
-    stemmer = PorterStemmer()
+    stemmer = nltk.PorterStemmer()
     posWords = set()
     try:
         infile = open(filename)
